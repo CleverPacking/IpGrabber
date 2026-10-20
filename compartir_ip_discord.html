@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compartir IP pública</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 650px; margin: 10vh auto; padding: 0 1rem; color: #202124; }
+    main { border: 1px solid #ddd; border-radius: 14px; padding: 1.5rem; }
+    button { padding: .7rem 1rem; border: 0; border-radius: 8px; cursor: pointer; }
+    #status { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Compartir la IP pública</h1>
+    <p>Aquesta pàgina pot consultar la teva IP pública i enviar-la al webhook de Discord configurat pel responsable de la pàgina. Només continua si hi estàs d'acord.</p>
+    <button id="share">Accepto i comparteixo la meva IP</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    // Introdueix aquí l'URL del teu webhook. Tingues present que quedarà visible
+    // per qualsevol persona que pugui veure el codi font de la pàgina.
+    const DISCORD_WEBHOOK_URL = "ENGANXA_AQUI_L_URL_DEL_WEBHOOK";
+
+    const button = document.getElementById("share");
+    const status = document.getElementById("status");
+
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      status.textContent = "Consultant la IP pública…";
+
+      try {
+        if (!DISCORD_WEBHOOK_URL.startsWith("https://discord.com/api/webhooks/") &&
+            !DISCORD_WEBHOOK_URL.startsWith("https://discordapp.com/api/webhooks/")) {
+          throw new Error("Configura primer DISCORD_WEBHOOK_URL al codi HTML.");
+        }
+
+        const ipResponse = await fetch("https://api.ipify.org?format=json");
+        if (!ipResponse.ok) throw new Error("No s'ha pogut consultar la IP.");
+        const { ip } = await ipResponse.json();
+
+        const discordResponse = await fetch(DISCORD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: `Un visitant ha acceptat compartir la seva IP pública: ${ip}`
+          })
+        });
+
+        if (!discordResponse.ok) {
+          throw new Error("Discord ha rebutjat la petició. Pot ser un problema de CORS; en aquest cas cal un petit servidor intermediari.");
+        }
+        status.textContent = "La IP s'ha enviat correctament al webhook.";
+      } catch (error) {
+        status.textContent = `No s'ha pogut completar: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
